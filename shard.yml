@@ -1,0 +1,13 @@
+name: syncplay_bot
+version: 0.1.0
+
+authors:
+  - ZerataX <mail@zera.tax>
+
+targets:
+  syncplay_bot:
+    main: src/syncplay_bot.cr
+
+crystal: 1.0.0
+
+license: MIT
