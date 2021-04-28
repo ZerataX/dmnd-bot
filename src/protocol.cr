@@ -1,15 +1,6 @@
+require "./converter"
+
 module Syncplay
-    struct StringToBoolConverter(Converter)
-        def self.from_json(pull : JSON::PullParser)
-        string = pull.read_string
-        string == "true"
-        end
-
-        def self.to_json(value : Bool, json : JSON::Builder)
-            json.bool(value)
-        end
-    end
-
     class Version
         getter major : UInt16
         getter minor : UInt16
@@ -45,6 +36,13 @@ module Syncplay
             "readiness": {type: Bool, default: true},
             "managedRooms": {type: Bool, default: true}
         )
+
+        def initialize(@sharedPlaylists : Bool = true,
+                @chat : Bool = true,
+                @featureList : Bool = true,
+                @readiness : Bool = true,
+                @managedRooms : Bool = true)
+        end
     end
 
     class Room
@@ -62,13 +60,14 @@ module Syncplay
             room: Room,
             version: {type: Version, default: Version.new("1.2.255")},
             realversion: {type: Version, default: Version.new("1.6.8")},
-            # features: {type: Features, default: Features}
+            features: {type: Features, default: Features}
         )
 
         def initialize(@username : String, roomname : String)
             @room = Room.new roomname
             @version = Version.new("1.2.255")
             @realversion = Version.new("1.6.8")
+            @features= Features.new()
         end
     end
 end

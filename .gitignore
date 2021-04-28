@@ -1,5 +1,10 @@
+# crystal stuff
 /docs/
 /lib/
 /bin/
 /.shards/
 *.dwarf
+
+# config files
+*.yaml
+!config.example.yaml
