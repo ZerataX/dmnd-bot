@@ -1,0 +1,30 @@
+name: Crystal CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    - name: Install nix
+      uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-20.09
+
+    - name: enter nix shell
+      run: nix-shell --arg testing true
+
+    - name: create self signed certs
+      run: |
+        pushd spec/tset_certs
+        ./create_certs.sh
+        popd
+
+    - name: run tests
+      run: |
+        crystal spec
+        crystal tool format --check
