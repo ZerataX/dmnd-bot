@@ -4,8 +4,9 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
 jobs:
- build:
+ test:
   runs-on: ubuntu-latest
   steps:
     - name: Check out the repo
@@ -20,7 +21,7 @@ jobs:
 
     - name: create self signed certs
       run: |
-        pushd spec/tset_certs
+        pushd spec/test_certs
         ./create_certs.sh
         popd
 
