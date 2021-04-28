@@ -17,12 +17,4 @@ jobs:
         nix_path: nixpkgs=channel:nixos-20.09
 
     - name: run tests
-      run: | 
-        nix-shell --arg testing true
-
-        pushd spec/test_certs
-        ./create_certs.sh
-        popd
-
-        crystal spec
-        crystal tool format --check
+      run: ./tests
