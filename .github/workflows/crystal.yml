@@ -17,4 +17,4 @@ jobs:
         nix_path: nixpkgs=channel:nixos-20.09
 
     - name: run tests
-      run: ./tests
+      run: ./tests.sh
