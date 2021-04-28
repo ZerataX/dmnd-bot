@@ -16,16 +16,13 @@ jobs:
       with:
         nix_path: nixpkgs=channel:nixos-20.09
 
-    - name: enter nix shell
-      run: nix-shell --arg testing true
+    - name: run tests
+      run: | 
+        nix-shell --arg testing true
 
-    - name: create self signed certs
-      run: |
         pushd spec/test_certs
         ./create_certs.sh
         popd
 
-    - name: run tests
-      run: |
         crystal spec
         crystal tool format --check
