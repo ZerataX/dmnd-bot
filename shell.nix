@@ -20,13 +20,13 @@
 # $ nix-shell --pure --arg musl true
 #
 
-{llvm ? 10, musl ? false, system ? builtins.currentSystem}:
+{llvm ? 10, musl ? false, system ? builtins.currentSystem, testing ? false}:
 
 let
   nixpkgs = import (builtins.fetchTarball {
-    name = "nixpkgs-20.03";
-    url = "https://github.com/NixOS/nixpkgs/archive/2d580cd2793a7b5f4b8b6b88fb2ccec700ee1ae6.tar.gz";
-    sha256 = "1nbanzrir1y0yi2mv70h60sars9scwmm0hsxnify2ldpczir9n37";
+    name = "nixpkgs-unstable";
+    url = "https://github.com/NixOS/nixpkgs/archive/0fe6b1ccde4f80ff7a3c969dffb57a811932dc38.tar.gz";
+    sha256 = "17r3m8acpsi1awnll09yqgsyfd12rqf04v5i1ip91rgmf9z9zghn";
   }) {
     inherit system;
   };
@@ -131,9 +131,9 @@ let
 
   stdLibDeps = with pkgs; [
       boehmgc gmp libevent libiconv libxml2 libyaml openssl pcre zlib
-    ] ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
+    ] ++ lib.optionals stdenv.isDarwin [ libiconv ];
 
-  tools = [ pkgs.hostname pkgs.git llvm_suite.extra ];
+  tools = with pkgs; [ pkgs.hostname pkgs.git llvm_suite.extra ] ++ lib.optionals testing [ syncplay openssl ];
 in
 
 pkgs.stdenv.mkDerivation rec {

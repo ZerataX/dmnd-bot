@@ -41,7 +41,7 @@ begin
       end
     end
   end
-rescue ex : ArgumentError
+rescue ex : ArgumentError | YAML::ParseException
   puts "[ERROR]\t couldn't parse config file: \"#{ex.message}\""
 end
 

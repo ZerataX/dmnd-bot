@@ -15,28 +15,36 @@ module Config
     end
     
     class Webhook
-        YAML.mapping({
-            url: String,
-            type: WebhookType
-        })
+        include YAML::Serializable
+        @[YAML::Field(key: "url", converter: StringToURI)]
+        getter url : URI
+        @[YAML::Field(key: "type")]
+        getter type : WebhookType
     end
 
     class Instance
-        YAML.mapping({
-            host: {type: URI, converter: StringToURI},
-            room: String,
-            password: {type: String, optional: true}
-            name: String,
-            webhooks: Array(Webhook)
-        })
+        include YAML::Serializable
+        @[YAML::Field(key: "host", converter: StringToURI)]
+        getter host : URI
+        @[YAML::Field(key: "room")]
+        getter type : String
+        @[YAML::Field(key: "password")]
+        getter password : String?
+        @[YAML::Field(key: "name")]
+        getter name : String
+        @[YAML::Field(key: "webhooks")]
+        getter webhooks : Array(Webhook)
     end
 
     class Parser
-        YAML.mapping({
-            instances: Array(Instance)
-        })
+        include YAML::Serializable
+        @[YAML::Field(key: "instances")]
+        getter instances : Array(Instance)
 
         def self.new(path : String)
+            unless File.exists?(path)
+                raise ArgumentError.new("No such file!")
+            end
             self.from_yaml File.open(path)            
         end
     end

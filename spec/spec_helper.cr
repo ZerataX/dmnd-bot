@@ -1,2 +1,3 @@
 require "spec"
-require "../src/syncplay_bot"
+require "../src/config"
+require "../src/client"

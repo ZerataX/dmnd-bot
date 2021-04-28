@@ -11,7 +11,8 @@ class SyncplayBot
     getter address : String = "localhost"
     getter port : Int32 = 8995
 
-    def initialize (@address, @port , @debug)
+    def initialize (@address, @port , @debug = false)
+        puts "[DEBUG]\t listening on #{address}:#{port}" if @debug
     end
 
     def c_put(message)
@@ -32,8 +33,7 @@ class SyncplayBot
         if !response.nil?
             return Syncplay::TLSenabled.from_json(response, "TLS").startTLS
         else
-            puts "Error!!"
-            return false
+            raise "[ERORR]\t Server didn't respond to TLS request"
         end
     end
 

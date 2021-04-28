@@ -2,6 +2,7 @@ instances:
 - host: http://localhost:8995
   room: example
   name: syncbot
+  # password: optional
   webhooks:
   - url: https://discord.com/api/webhooks/example
-    type: DISCORD
+    type: DISCORD # available: [matrix, discord]

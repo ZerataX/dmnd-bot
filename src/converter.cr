@@ -14,7 +14,7 @@ end
 struct StringToURI(Converter)
     def self.from_yaml(ctx : YAML::ParseContext, node : YAML::Nodes::Node) : URI
         unless node.is_a?( YAML::Nodes::Scalar)
-            node.raise "Expected string, not #{node.class}"
+            node.raise "Expected scalar, not #{node.kind}"
         end
         URI.parse node.value
     end

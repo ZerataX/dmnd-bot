@@ -23,51 +23,51 @@ module Syncplay
     end
 
     class TLSenabled
-        JSON.mapping(
-            startTLS: {type: Bool, converter: StringToBoolConverter}
-        )
+        include JSON::Serializable
+        @[JSON::Field(key: "startTLS", converter: StringToBoolConverter)]
+        getter startTLS : Bool
     end
 
     class Features
-        JSON.mapping(
-            "sharedPlaylists": {type: Bool, default: true},
-            "chat": {type: Bool, default: true},
-            "featureList": {type: Bool, default: true},
-            "readiness": {type: Bool, default: true},
-            "managedRooms": {type: Bool, default: true}
-        )
+        include JSON::Serializable
+        @[JSON::Field(key: "sharedPlaylists")]
+        getter sharedPlaylists : Bool = true
+        @[JSON::Field(key: "chat")]
+        getter chat : Bool = true
+        @[JSON::Field(key: "featureList")]
+        getter featureList : Bool = true
+        @[JSON::Field(key: "readiness")]
+        getter readiness : Bool = true
+        @[JSON::Field(key: "managedRooms")]
+        getter managedRooms : Bool = true
 
-        def initialize(@sharedPlaylists : Bool = true,
-                @chat : Bool = true,
-                @featureList : Bool = true,
-                @readiness : Bool = true,
-                @managedRooms : Bool = true)
+        def initialize(
+            # @sharedPlaylists : Bool = true,
+            # @chat : Bool = true,
+            # @featureList : Bool = true,
+            # @readiness : Bool = true,
+            # @managedRooms : Bool = true
+            )
         end
     end
 
     class Room
-        JSON.mapping(
-            name: String
-        )
-
-        def initialize(@name : String)
-        end
+        include JSON::Serializable
+        @[JSON::Field(key: "name")]
+        getter name : String
     end
 
     class User
-        JSON.mapping(
-            username: String,
-            room: Room,
-            version: {type: Version, default: Version.new("1.2.255")},
-            realversion: {type: Version, default: Version.new("1.6.8")},
-            features: {type: Features, default: Features}
-        )
-
-        def initialize(@username : String, roomname : String)
-            @room = Room.new roomname
-            @version = Version.new("1.2.255")
-            @realversion = Version.new("1.6.8")
-            @features= Features.new()
-        end
+        include JSON::Serializable
+        @[JSON::Field(key: "username")]
+        getter username : String
+        @[JSON::Field(key: "room")]
+        getter room : Room
+        @[JSON::Field(key: "version")]
+        getter version : Version = Version.new("1.2.255")
+        @[JSON::Field(key: "realversion")]
+        getter realversion : Version = Version.new("1.6.8")
+        @[JSON::Field(key: "features")]
+        getter features : Features = Features.new()
     end
 end
