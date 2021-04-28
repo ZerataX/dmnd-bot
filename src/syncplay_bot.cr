@@ -5,7 +5,6 @@ require "option_parser"
 debug = false
 path = "./config.yaml"
 
-
 OptionParser.parse do |parser|
   parser.banner = "Syncplay Bot"
 
@@ -33,9 +32,9 @@ begin
         # this part sucks i wanna know this while parsing
         address = instance.host.hostname.not_nil!
         port = instance.host.port.not_nil!
-  
+
         bot = SyncplayBot.new(address, port, debug)
-        bot.start()
+        bot.start
       rescue NilAssertionError
         puts "{ERROR]\t host should be in format: 'http://domain.tld:port'"
       end
@@ -44,4 +43,3 @@ begin
 rescue ex : ArgumentError | YAML::ParseException
   puts "[ERROR]\t couldn't parse config file: \"#{ex.message}\""
 end
-

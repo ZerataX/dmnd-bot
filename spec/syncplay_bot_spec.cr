@@ -1,9 +1,9 @@
 require "./spec_helper"
 
-DIR = "./spec"
+DIR          = "./spec"
 EXAMPLES_DIR = "#{DIR}/examples"
-CERT_DIR = "#{DIR}/test_certs"
-ADDRESS = "localhost"
+CERT_DIR     = "#{DIR}/test_certs"
+ADDRESS      = "localhost"
 
 describe Config do
   describe Config::Parser do
@@ -54,20 +54,20 @@ describe SyncplayBot do
         bot.supports_tls(client).should be_true
       end
 
-      server.terminate()
+      server.terminate
     end
 
     it "returns false if server doesn't support TLS", tags: "server" do
       port = Random.rand(1001..9000)
       server = Process.new("syncplay-server --port #{port}", shell: true)
       sleep(1)
-  
+
       bot = SyncplayBot.new(ADDRESS, port)
       TCPSocket.open(bot.address, bot.port) do |client|
         bot.supports_tls(client).should be_false
       end
 
-      server.terminate()
+      server.terminate
     end
   end
 end
