@@ -30,7 +30,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dist/syncplay_bot
+        files: result/bin/syncplay_bot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

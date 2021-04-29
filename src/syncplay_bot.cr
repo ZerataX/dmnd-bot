@@ -7,7 +7,7 @@ require "./protocol"
 require "./config"
 
 module SyncplayBot
-  VERSION = "0.1.2"
+  VERSION = "0.1.3"
 
   class Bot
     getter debug : Format::Levels = Format::Levels::INFO
