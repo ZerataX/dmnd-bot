@@ -10,4 +10,5 @@
 !config.example.yaml
 
 # output
-dist/*
+bin/
+result/

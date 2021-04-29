@@ -9,7 +9,7 @@ pkgs.crystal.buildCrystalPackage rec {
   format = "shards";
 
   postPatch = ''
-    substituteInPlace spec/client_spec.cr \
+    substituteInPlace spec/syncplay_bot_spec.cr \
         --replace 'syncplay' '${pkgs.syncplay}/bin/syncplay' 
   '';
 
