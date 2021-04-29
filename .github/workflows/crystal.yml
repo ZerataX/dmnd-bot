@@ -18,7 +18,8 @@ jobs:
     - name: Enable Build Cache
       uses: cachix/cachix-action@v9
       with:
-        name: crystal-ci
+        name: zeratax
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
     - name: Create Test Certs
       run: |
