@@ -1,51 +1,68 @@
-require "./client"
+require "json"
+require "socket"
+require "uri"
+
+require "./formatter"
+require "./protocol"
 require "./config"
-require "option_parser"
 
-debug = Format::Levels::INFO
-path = Path.posix("./config.yaml")
+module SyncplayBot
+  VERSION = "0.1.0"
 
-OptionParser.parse do |parser|
-  parser.banner = "Syncplay Bot"
+  class Bot
+    getter debug : Format::Levels = Format::Levels::INFO
+    getter address : String = "localhost"
+    getter port : Int32 = 8995
+    getter name : String
+    getter room : String
 
-  parser.on "-v", "--version", "Show version" do
-    puts "version #{SyncplayBot::VERSION}"
-    exit
-  end
-  parser.on "-f PATH", "--file=PATH", "Config file" do |file_path|
-    path = Path.new(file_path)
-  end
-  parser.on "-d", "--debug", "Verbose logging" do
-    debug = Format::Levels::DEBUG
-  end
-  parser.on "-h", "--help", "Show help" do
-    puts parser
-    exit
-  end
-end
+    def initialize(@address, @port, @name, @room, @debug)
+    end
 
-begin
-  parser = Config::Parser.new(path)
-  if parser.instances
-    parser.instances.each do |instance|
+    def c_put(message)
+      Format.debug "Client >> #{message}", @debug
+    end
+
+    def s_put(message)
+      Format.debug "Server << #{message}", @debug
+    end
+
+    def supports_tls(client)
+      message = %({"TLS": {"startTLS": "send"}}\r\n)
+      c_put message
+      client << message
+
+      response = client.gets
+      s_put response
+      if !response.nil?
+        return Syncplay::TLSenabled.from_json(response, "TLS").startTLS
+      else
+        raise RuntimeError.new "Server didn't respond to TLS request"
+      end
+    end
+
+    def start
       begin
-        # this part sucks i wanna know this while parsing
-        address = instance.host.hostname.not_nil!
-        port = instance.host.port.not_nil!
+        TCPSocket.open(@address, @port) do |client|
+          Format.info "Listening on #{address}:#{port}", @debug
+          if supports_tls(client)
+            Format.info "Server supports TLS", @debug
+          else
+            Format.info "Server does NOT supports TLS", @debug
+          end
 
-        bot = SyncplayBot.new(
-          address,
-          port,
-          instance.name,
-          instance.room,
-          debug
-        )
-        bot.start
-      rescue NilAssertionError
-        Format.error "Host should be in format: 'http://domain.tld:port'", debug
+          user = Syncplay::User.new(@name, @room)
+
+          message = "{\"Hello\": #{user.to_json}}\r\n"
+          c_put message
+          client << message
+
+          response = client.gets
+          s_put response
+        end
+      rescue Socket::ConnectError
+        Format.error "Couldn't connect to #{address}:#{port}", @debug
       end
     end
   end
-rescue ex : ArgumentError | YAML::ParseException
-  Format.error "Couldn't parse config file: \"#{ex.message}\"", debug
 end

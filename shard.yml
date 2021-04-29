@@ -8,7 +8,7 @@ authors:
 
 targets:
   syncplay_bot:
-    main: src/syncplay_bot.cr
+    main: src/syncplay_bot_cli.cr
 
 crystal: 1.0.0
 

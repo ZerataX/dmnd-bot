@@ -26,9 +26,6 @@ jobs:
         ./create_certs.sh
         popd
 
-    # - name: Run Tests
-    #   run: nix-shell --run "crystal spec && crystal tool format --check"
-
     - name: Build Release
       run: nix-build
 
