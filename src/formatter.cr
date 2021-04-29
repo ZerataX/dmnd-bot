@@ -1,4 +1,4 @@
-module Logger
+module Format
   enum Levels
     ERROR
     WARNING
@@ -7,9 +7,9 @@ module Logger
   end
 
   macro define_method(error_name)
-        def Logger.{{error_name.id.downcase}}(msg, level = Levels::INFO)
-            if level > Levels::INFO
-                "[#{Levels::{{error_name}}}]:\t #{msg}"
+        def Format.{{error_name.id.downcase}}(msg, level = Levels::INFO)
+            if level >= Levels::{{error_name}}
+                puts "[#{Levels::{{error_name}}}]:\t #{msg}"
             end
         end
     end

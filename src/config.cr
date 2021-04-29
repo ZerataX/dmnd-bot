@@ -43,7 +43,7 @@ module Config
 
     def self.new(path : String)
       unless File.exists?(path)
-        raise ArgumentError.new("No such file!")
+        raise ArgumentError.new "No such file!"
       end
       self.from_yaml File.open(path)
     end

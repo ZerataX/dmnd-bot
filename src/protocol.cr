@@ -18,7 +18,7 @@ module Syncplay
     end
 
     def to_json(json : JSON::Builder)
-      json.string("#{@major}.#{@minor}.#{@patch}")
+      json.string "#{@major}.#{@minor}.#{@patch}"
     end
   end
 
@@ -41,11 +41,7 @@ module Syncplay
     @[JSON::Field(key: "managedRooms")]
     getter managedRooms : Bool = true
 
-    def initialize # @sharedPlaylists : Bool = true,
-      # @chat : Bool = true,
-      # @featureList : Bool = true,
-      # @readiness : Bool = true,
-      # @managedRooms : Bool = true
+    def initialize
     end
   end
 

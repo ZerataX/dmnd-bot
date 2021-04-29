@@ -20,6 +20,6 @@ struct StringToURI(Converter)
   end
 
   def self.to_yaml(value : URI, yaml : YAML::Builder)
-    yaml.string(value.to_s)
+    yaml.string value.to_s
   end
 end
