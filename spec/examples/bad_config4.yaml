@@ -1,0 +1,7 @@
+instances:
+- host: http://localhost:8995
+  room: "example
+  name: syncbot
+  webhooks:
+  - url: https://discord.com/api/webhooks/example
+    type: DISCORD

@@ -42,10 +42,10 @@ module Syncplay
     getter managedRooms : Bool = true
 
     def initialize # @sharedPlaylists : Bool = true,
-    # @chat : Bool = true,
-    # @featureList : Bool = true,
-    # @readiness : Bool = true,
-    # @managedRooms : Bool = true
+      # @chat : Bool = true,
+      # @featureList : Bool = true,
+      # @readiness : Bool = true,
+      # @managedRooms : Bool = true
     end
   end
 
@@ -53,6 +53,9 @@ module Syncplay
     include JSON::Serializable
     @[JSON::Field(key: "name")]
     getter name : String
+
+    def initialize(@name)
+    end
   end
 
   class User
@@ -67,5 +70,9 @@ module Syncplay
     getter realversion : Version = Version.new("1.6.8")
     @[JSON::Field(key: "features")]
     getter features : Features = Features.new
+
+    def initialize(@username : String, roomname : String)
+      @room = Room.new roomname
+    end
   end
 end

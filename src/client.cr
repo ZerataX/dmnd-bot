@@ -2,24 +2,28 @@ require "json"
 require "socket"
 
 require "uri"
+require "./logger"
 require "./protocol"
 
 class SyncplayBot
   VERSION = "0.1.0"
-  getter debug : Bool = false
+  getter debug : Logger::Levels = Logger::Levels::INFO
   getter address : String = "localhost"
   getter port : Int32 = 8995
 
-  def initialize(@address, @port, @debug = false)
-    puts "[DEBUG]\t listening on #{address}:#{port}" if @debug
+  def initialize(@address, @port, debug = false)
+    if debug
+      @debug = Logger::Levels::DEBUG
+    end
+    puts Logger.debug("listening on #{address}:#{port}", @debug)
   end
 
   def c_put(message)
-    puts "[DEBUG]\t Client >> #{message}" if @debug
+    puts Logger.debug("Client >> #{message}", @debug)
   end
 
   def s_put(message)
-    puts "[DEBUG]\t Server << #{message}" if @debug
+    puts Logger.debug("Server << #{message}", @debug)
   end
 
   def supports_tls(client)
@@ -39,9 +43,9 @@ class SyncplayBot
   def start
     TCPSocket.open(@address, @port) do |client|
       if supports_tls(client)
-        puts "[INFO]\t Server supports TLS"
+        puts Logger.info "Server supports TLS"
       else
-        puts "[INFO]\t Server does NOT supports TLS"
+        puts Logger.info "Server does NOT supports TLS"
       end
 
       user = Syncplay::User.new("memelord", "meme")

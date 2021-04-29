@@ -6,5 +6,6 @@ pushd spec/test_certs
 ./create_certs.sh
 popd
 
+pwd
 crystal spec
 crystal tool format --check

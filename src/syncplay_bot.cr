@@ -36,10 +36,10 @@ begin
         bot = SyncplayBot.new(address, port, debug)
         bot.start
       rescue NilAssertionError
-        puts "{ERROR]\t host should be in format: 'http://domain.tld:port'"
+        puts Logger.error "host should be in format: 'http://domain.tld:port'"
       end
     end
   end
 rescue ex : ArgumentError | YAML::ParseException
-  puts "[ERROR]\t couldn't parse config file: \"#{ex.message}\""
+  puts Logger.error "couldn't parse config file: \"#{ex.message}\""
 end
