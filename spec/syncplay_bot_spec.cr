@@ -37,7 +37,8 @@ describe Config do
       parser = Config::Parser.new("./config.example.yaml")
       instance = parser.instances[0]
       instance.host.port.should eq(8995)
-      # instance.webhooks[0].type should eq(Config::WebhookType::Discord)
+      type = instance.webhooks[0].type 
+      type.should eq(Config::WebhookType::Discord)
     end
   end
 end
