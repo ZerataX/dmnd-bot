@@ -24,12 +24,15 @@ jobs:
         popd
 
     - name: Build Release
-      run: nix-build
+      run: |
+        nix-build
+        chmod a+x result/bin/syncplay_bot
 
     - name: Upload release artifacts
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        draft: true
         files: result/bin/syncplay_bot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
