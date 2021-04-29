@@ -1,7 +1,7 @@
 name: syncplay_bot
 description: |
   announces what's currently being played via webhooks 
-version: 0.1.0
+version: 0.1.1
 
 authors:
   - ZerataX <mail@zera.tax>
