@@ -47,7 +47,7 @@ describe SyncplayBot do
   describe "#supports_tls" do
     it "returns true if server support TLS", tags: "server" do
       port = Random.rand(1025..9000)
-      server = Process.new("syncplay-server --port #{port} --tls=#{CERT_DIR}", shell: true)
+      server = Process.new("syncplay-server --port #{port} --tls=#{CERT_DIR.normalize}", shell: true)
       sleep(1)
 
       bot = SyncplayBot.new(ADDRESS, port, "test", "test", Format::Levels::ERROR)

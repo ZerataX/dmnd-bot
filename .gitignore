@@ -8,3 +8,6 @@
 # config files
 *.yaml
 !config.example.yaml
+
+# output
+dist/*
