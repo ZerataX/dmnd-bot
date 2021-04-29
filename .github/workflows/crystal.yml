@@ -26,7 +26,7 @@ jobs:
     - name: Build Release
       run: |
         nix-build
-        chmod a+x result/bin/syncplay_bot
+        sudo chmod a+x result/bin/syncplay_bot
 
     - name: Upload release artifacts
       uses: softprops/action-gh-release@v1
