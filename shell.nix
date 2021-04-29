@@ -40,13 +40,19 @@ let
 
       # Extract only the compiler binary
       buildCommand = ''
-        mkdir -p $out/bin
+        mkdir -p $out
 
         # Darwin packages use embedded/bin/crystal
-        [ ! -f "${src}/embedded/bin/crystal" ] || cp ${src}/embedded/bin/crystal $out/bin/
+        if [ -f "${src}/embedded/bin/crystal" ]; then
+          cp -R ${src}/embedded/* $out/
+          cp -R ${src}/src $out/
+        fi
 
         # Linux packages use lib/crystal/bin/crystal
-        [ ! -f "${src}/lib/crystal/bin/crystal" ] || cp ${src}/lib/crystal/bin/crystal $out/bin/
+        if [ -f "${src}/lib/crystal/bin/crystal" ]; then
+          cp -R ${src}/lib/crystal/* $out 
+          cp -R ${src}/share/crystal/src $out
+        fi
       '';
     };
 
@@ -134,20 +140,21 @@ let
     ] ++ lib.optionals stdenv.isDarwin [ libiconv ];
 
   tools = with pkgs; [ pkgs.hostname pkgs.git llvm_suite.extra ] ++ lib.optionals testing [ syncplay openssl ];
+  libraries = with pkgs; lib.strings.concatStringsSep ":" (lib.lists.forEach stdLibDeps (x: "${x}/lib/"));
 in
 
 pkgs.stdenv.mkDerivation rec {
   name = "crystal-dev";
 
   buildInputs = tools ++ stdLibDeps ++ [
-    nixpkgs.crystal
     latestCrystalBinary
     pkgconfig
     llvm_suite.llvm
   ];
 
   LLVM_CONFIG = "${llvm_suite.llvm}/bin/llvm-config";
-  # CRYSTAL_LIBRARY_PATH="${latestCrystalBinary}";
+  CRYSTAL_LIBRARY_PATH = "${libraries}:${latestCrystalBinary}/lib";
+  CRYSTAL_PATH = "lib:${latestCrystalBinary}/src";
 
   # ld: warning: object file (.../src/ext/libcrystal.a(sigfault.o)) was built for newer OSX version (10.14) than being linked (10.12)
   MACOSX_DEPLOYMENT_TARGET = "10.11";

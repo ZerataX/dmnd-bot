@@ -42,10 +42,10 @@ begin
         )
         bot.start
       rescue NilAssertionError
-        Format.error "Host should be in format: 'http://domain.tld:port'"
+        Format.error "Host should be in format: 'http://domain.tld:port'", debug
       end
     end
   end
 rescue ex : ArgumentError | YAML::ParseException
-  Format.error "Couldn't parse config file: \"#{ex.message}\""
+  Format.error "Couldn't parse config file: \"#{ex.message}\"", debug
 end

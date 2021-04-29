@@ -39,22 +39,26 @@ class SyncplayBot
   end
 
   def start
-    Format.info "Listening on #{address}:#{port}", @debug
-    TCPSocket.open(@address, @port) do |client|
-      if supports_tls(client)
-        Format.info "Server supports TLS", @debug
-      else
-        Format.info "Server does NOT supports TLS", @debug
+    begin
+      TCPSocket.open(@address, @port) do |client|
+        Format.info "Listening on #{address}:#{port}", @debug
+        if supports_tls(client)
+          Format.info "Server supports TLS", @debug
+        else
+          Format.info "Server does NOT supports TLS", @debug
+        end
+  
+        user = Syncplay::User.new(@name, @room)
+  
+        message = "{\"Hello\": #{user.to_json}}\r\n"
+        c_put message
+        client << message
+  
+        response = client.gets
+        s_put response
       end
-
-      user = Syncplay::User.new("memelord", "meme")
-
-      message = "{\"Hello\": #{user.to_json}}\r\n"
-      c_put message
-      client << message
-
-      response = client.gets
-      s_put response
+    rescue Socket::ConnectError
+      Format.error "Couldn't connect to #{address}:#{port}", @debug
     end
   end
 end

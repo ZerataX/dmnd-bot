@@ -1,6 +1,7 @@
 module Format
   # probably should just use the standard lib log class, but this was fun
   enum Levels
+    NONE
     ERROR
     WARNING
     INFO
