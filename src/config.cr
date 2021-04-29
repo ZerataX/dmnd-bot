@@ -27,7 +27,7 @@ module Config
     @[YAML::Field(key: "host", converter: StringToURI)]
     getter host : URI
     @[YAML::Field(key: "room")]
-    getter type : String
+    getter room : String
     @[YAML::Field(key: "password")]
     getter password : String?
     @[YAML::Field(key: "name")]
@@ -41,7 +41,7 @@ module Config
     @[YAML::Field(key: "instances")]
     getter instances : Array(Instance)
 
-    def self.new(path : String)
+    def self.new(path : Path)
       unless File.exists?(path)
         raise ArgumentError.new "No such file!"
       end

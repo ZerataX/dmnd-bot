@@ -9,7 +9,7 @@ module Format
   macro define_method(error_name)
         def Format.{{error_name.id.downcase}}(msg, level = Levels::INFO)
             if level >= Levels::{{error_name}}
-                puts "[#{Levels::{{error_name}}}]:\t #{msg}"
+                puts "[#{Levels::{{error_name}}}]: \t#{msg}"
             end
         end
     end

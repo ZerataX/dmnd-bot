@@ -10,20 +10,18 @@ class SyncplayBot
   getter debug : Format::Levels = Format::Levels::INFO
   getter address : String = "localhost"
   getter port : Int32 = 8995
+  getter name : String
+  getter room : String
 
-  def initialize(@address, @port, debug = false)
-    if debug
-      @debug = Format::Levels::DEBUG
-    end
-    Format.debug("listening on #{address}:#{port}", @debug)
+  def initialize(@address, @port, @name, @room, @debug)
   end
 
   def c_put(message)
-    Format.debug("Client >> #{message}", @debug)
+    Format.debug "Client >> #{message}", @debug
   end
 
   def s_put(message)
-    Format.debug("Server << #{message}", @debug)
+    Format.debug "Server << #{message}", @debug
   end
 
   def supports_tls(client)
@@ -41,11 +39,12 @@ class SyncplayBot
   end
 
   def start
+    Format.info "Listening on #{address}:#{port}", @debug
     TCPSocket.open(@address, @port) do |client|
       if supports_tls(client)
-        Format.info "Server supports TLS"
+        Format.info "Server supports TLS", @debug
       else
-        Format.info "Server does NOT supports TLS"
+        Format.info "Server does NOT supports TLS", @debug
       end
 
       user = Syncplay::User.new("memelord", "meme")
