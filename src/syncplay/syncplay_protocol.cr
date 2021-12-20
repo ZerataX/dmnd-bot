@@ -1,4 +1,4 @@
-require "./converter"
+require "../converter"
 
 module Syncplay
   class Version
@@ -24,7 +24,7 @@ module Syncplay
 
   class TLSenabled
     include JSON::Serializable
-    @[JSON::Field(key: "startTLS", converter: StringToBoolConverter)]
+    @[JSON::Field(key: "startTLS", converter: StringToBool)]
     getter startTLS : Bool
   end
 

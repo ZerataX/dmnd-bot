@@ -4,23 +4,40 @@ require "uri"
 require "./converter"
 
 module Config
-  enum WebhookType
-    Matrix
-    Discord
+  class Parser
+    include YAML::Serializable
+    @[YAML::Field(key: "discord")]
+    getter discord : Discord
+    @[YAML::Field(key: "saucenao")]
+    getter saucenao : Saucenao
+    @[YAML::Field(key: "syncplay")]
+    getter syncplay : Syncplay 
 
-    def to_json(io)
-      io << '"'
-      to_s(io)
-      io << '"'
+    def self.new(path : Path)
+      unless File.exists?(path)
+        raise ArgumentError.new "No such file!"
+      end
+      self.from_yaml File.open(path)
     end
   end
 
-  class Webhook
+  class Discord
     include YAML::Serializable
-    @[YAML::Field(key: "url", converter: StringToURI)]
-    getter url : URI
-    @[YAML::Field(key: "type")]
-    getter type : WebhookType
+    @[YAML::Field(key: "token")]
+    getter token : String
+    @[YAML::Field(key: "id")]
+    getter id : UInt64
+  end
+
+  class BotModule
+    include YAML::Serializable
+    @[YAML::Field(key: "enabled")]
+    getter enabled : Bool
+  end
+
+  class Syncplay < BotModule
+    @[YAML::Field(key: "instances")]
+    getter instances : Array(Instance)?
   end
 
   class Instance
@@ -33,20 +50,10 @@ module Config
     getter password : String?
     @[YAML::Field(key: "name")]
     getter name : String
-    @[YAML::Field(key: "webhooks")]
-    getter webhooks : Array(Webhook)
   end
 
-  class Parser
-    include YAML::Serializable
-    @[YAML::Field(key: "instances")]
-    getter instances : Array(Instance)
-
-    def self.new(path : Path)
-      unless File.exists?(path)
-        raise ArgumentError.new "No such file!"
-      end
-      self.from_yaml File.open(path)
-    end
+  class Saucenao < BotModule
+    @[YAML::Field(key: "token")]
+    getter token : String?
   end
 end

@@ -1,8 +1,13 @@
-instances:
-- host: http://localhost:8995
-  room: example
-  name: syncbot
-  # password: optional
-  webhooks:
-  - url: https://discord.com/api/webhooks/example
-    type: DISCORD # available: [matrix, discord]
+discord:
+  token: longrandomstring # see https://discord.com/developers/
+  id: bignumber
+saucenao:
+  enabled: false
+  token: longrandomstring # see https://saucenao.com/user.php
+syncplay:
+  enabled: false
+  instances:
+  - host: http://localhost:8995
+    room: example
+    name: syncbot
+    # password: optional

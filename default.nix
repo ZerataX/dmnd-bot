@@ -2,8 +2,8 @@
 }:
 
 pkgs.crystal.buildCrystalPackage rec {
-  pname = "syncplay_bot";
-  version = "0.1.3";
+  pname = "dmnd_bot";
+  version = "0.2.0";
   src = builtins.path { path = ./.; name = pname; };
 
   format = "shards";

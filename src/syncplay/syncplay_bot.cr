@@ -1,30 +1,26 @@
 require "json"
 require "socket"
 require "uri"
+require "log"
 
-require "./formatter"
-require "./protocol"
-require "./config"
+require "./syncplay_protocol"
 
-module SyncplayBot
-  VERSION = "0.1.3"
-
+module Syncplay
   class Bot
-    getter debug : Format::Levels = Format::Levels::INFO
     getter address : String = "localhost"
     getter port : Int32 = 8995
     getter name : String
     getter room : String
 
-    def initialize(@address, @port, @name, @room, @debug)
+    def initialize(@address, @port, @name, @room)
     end
 
     def c_put(message)
-      Format.debug "Client >> #{message}", @debug
+      Log.debug { "Client >> #{message}" }
     end
 
     def s_put(message)
-      Format.debug "Server << #{message}", @debug
+      Log.debug { "Server << #{message}" }
     end
 
     def supports_tls(client)
@@ -44,11 +40,11 @@ module SyncplayBot
     def start
       begin
         TCPSocket.open(@address, @port) do |client|
-          Format.info "Listening on #{address}:#{port}", @debug
+          Log.info { "Listening on #{address}:#{port}" }
           if supports_tls(client)
-            Format.info "Server supports TLS", @debug
+            Log.info { "Server supports TLS" }
           else
-            Format.info "Server does NOT supports TLS", @debug
+            Log.info { "Server does NOT supports TLS" }
           end
 
           user = Syncplay::User.new(@name, @room)
@@ -61,7 +57,7 @@ module SyncplayBot
           s_put response
         end
       rescue Socket::ConnectError
-        Format.error "Couldn't connect to #{address}:#{port}", @debug
+        Log.error { "Couldn't connect to #{address}:#{port}" }
       end
     end
   end
