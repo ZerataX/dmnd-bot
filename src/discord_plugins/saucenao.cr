@@ -214,29 +214,7 @@ module Discord
       when "sauce"
         output = "Sources:\n"
         arguments.each do |argument|
-          api_url = api_endpoint
-          q = api_url.query_params
-          q.add("url", argument)
-          api_url.query_params = q
-          sauce = get_sauce api_url
-
-          if sauce
-            sauce.results[..4].each do |result|
-              output += "Similiarity #{result.header.similiarty}% "
-              case result.header.similiarty
-              when 0..60
-                output += "🔴"
-              when 60..80
-                output += "🟠"
-              when 80..90
-                output += "🟡"
-              when 90..
-                output += "🟢"
-              end
-              urls = result.data.ext_urls
-              urls.each{|url| output += "Link: <#{url}>\n"}
-            end
-          end
+          output += construct_body(argument, 4)
         end
         client.create_message(payload.channel_id, output)
       else
@@ -245,7 +223,64 @@ module Discord
     end
 
     def passive(client, payload)
+      output = "Sources:\n"
+      images = 0
 
+      payload.embeds.each do |embed|
+        url = embed.url
+        unless url.nil?
+          body = construct_body(url)
+          if body
+            images += 1
+            output += body
+          end
+        end
+      end
+
+      payload.attachments.each do |attachment|
+        body = construct_body(attachment.url)
+        Log.info { attachment.url.to_s }
+        if body
+          images += 1
+          output += body
+        end
+      end
+      
+      if images > 0
+        client.create_message(payload.channel_id, output)
+      end
+    end
+
+    def construct_body(image_link : URI | String, limit : Int32 = 1)
+      output = ""
+      api_url = get_url image_link
+      sauce = get_sauce api_url
+      if sauce
+        sauce.results[..limit].each do |result|
+          output += "Similiarity #{result.header.similiarty}% "
+          case result.header.similiarty
+          when 0..60
+            output += "🔴"
+          when 60..80
+            output += "🟠"
+          when 80..90
+            output += "🟡"
+          when 90..
+            output += "🟢"
+          end
+          urls = result.data.ext_urls
+          urls.each { |url| output += "Link: <#{url}>\n" }
+        end
+      end
+      output
+    end
+
+    def get_url(image_link : URI | String)
+      api_url = api_endpoint
+      q = api_url.query_params
+      q.add("url", image_link)
+      api_url.query_params = q
+      api_url
     end
 
     def get_sauce(url : URI) : Saucenao::Parser | Nil

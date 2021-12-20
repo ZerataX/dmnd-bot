@@ -52,6 +52,10 @@ module Discord
           plugin.commands.includes? command
           command = command.lchop(PREFIX)
           plugin.execute(command, client, payload)
+
+          if plugin.passive
+            plugin.passive(client, payload)
+          end
         end
       end
 

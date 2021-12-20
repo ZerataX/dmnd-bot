@@ -13,7 +13,7 @@ module Discord
             Log.error { "command \"#{command}\" not implemented for plugin \"#{name}\"" }
         end
 
-        def passive(payload)
+        def passive(client, payload)
             Log.error { "passive not implemented for plugin \"#{name}\"" }
         end
     end
