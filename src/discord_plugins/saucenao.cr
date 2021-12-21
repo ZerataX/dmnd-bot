@@ -93,7 +93,7 @@ module Saucenao
   class ResultData
     include JSON::Serializable
     @[JSON::Field(key: "ext_urls")]
-    getter ext_urls : Array(String)
+    getter ext_urls : Array(String)?
 
     # optional stuff
     @[JSON::Field(key: "title")]
@@ -171,7 +171,7 @@ module Saucenao
     @[JSON::Field(key: "bcy_id")]
     getter bcy_id : Int32?
     @[JSON::Field(key: "bcy_type")]
-    getter bcy_type : Int32?
+    getter bcy_type : String?
 
     # # Seiga
     @[JSON::Field(key: "seiga_id")]
@@ -185,9 +185,9 @@ module Saucenao
     @[JSON::Field(key: "anilist_id")]
     getter anilist_id : Int32?
     @[JSON::Field(key: "part")]
-    getter part : Int32?
+    getter part : String?
     @[JSON::Field(key: "year")]
-    getter year : Int32?
+    getter year : String?
     @[JSON::Field(key: "est_time")]
     getter est_time : String?
   end
@@ -269,7 +269,9 @@ module Discord
             output += "🟢"
           end
           urls = result.data.ext_urls
-          urls.each { |url| output += "Link: <#{url}>\n" }
+          unless urls.nil?
+            urls.each { |url| output += " Link: <#{url}>\n" }
+          end
         end
       end
       output
@@ -286,7 +288,17 @@ module Discord
     def get_sauce(url : URI) : Saucenao::Parser | Nil
       Log.info { "getting sauce for: #{url}" }
       response = HTTP::Client.get url
-      Saucenao::Parser.from_json response.body
+      if response.status_code==200
+        begin
+          Saucenao::Parser.from_json response.body
+        rescue exception: JSON::SerializableError
+          Log.error(exception:exception) { "Could not decode json!" }
+          Log.error { response.body }
+        end
+      else 
+        Log.warn { "Saucenao responded with #{response.status_code}"}
+        Log.debug { response.body }
+      end
     end
   end
 end
