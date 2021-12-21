@@ -204,7 +204,7 @@ module Discord
     
     def initialize(token : String)
       @endpoint = URI.parse "https://saucenao.com/search.php"
-      @api_endpoint = endpoint.dup
+      @api_endpoint = @endpoint.dup
       @params == URI::Params{
         "output_type" => "0",
         "dedupe"      => "2",
