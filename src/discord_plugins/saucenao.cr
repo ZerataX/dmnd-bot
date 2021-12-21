@@ -225,12 +225,13 @@ module Discord
     def passive(client, payload)
       output = "Sources:\n"
       images = 0
+      threshold = 65.5
 
       payload.embeds.each do |embed|
         url = embed.url
         unless url.nil?
-          body = construct_body(url)
-          if body
+          body = construct_body(url, threshold: threshold)
+          unless body.strip.empty?
             images += 1
             output += body
           end
@@ -238,9 +239,9 @@ module Discord
       end
 
       payload.attachments.each do |attachment|
-        body = construct_body(attachment.url)
+        body = construct_body(attachment.url, threshold: threshold)
         Log.info { attachment.url.to_s }
-        if body
+        unless body.strip.empty?
           images += 1
           output += body
         end
@@ -251,26 +252,31 @@ module Discord
       end
     end
 
-    def construct_body(image_link : URI | String, limit : Int32 = 1)
+    def construct_body(image_link : URI | String, limit : Int32 = 1, threshold : Float64 = 0)
       output = ""
       api_url = get_url image_link
       sauce = get_sauce api_url
       if sauce
         sauce.results[..limit].each do |result|
-          output += "Similiarity #{result.header.similiarty}% "
-          case result.header.similiarty
+          similarity = result.header.similiarty
+          if similarity < threshold
+            Log.info { "Threshold not met!" }
+            next
+          end
+          output += "Similiarity #{similarity}% "
+          case similarity
           when 0..60
-            output += "🔴"
+            output += "🔴 "
           when 60..80
-            output += "🟠"
+            output += "🟠 "
           when 80..90
-            output += "🟡"
+            output += "🟡 "
           when 90..
-            output += "🟢"
+            output += "🟢 "
           end
           urls = result.data.ext_urls
           unless urls.nil?
-            urls.each { |url| output += " Link: <#{url}>\n" }
+            urls.each { |url| output += "Link: <#{url}>\n" }
           end
         end
       end
