@@ -4,9 +4,9 @@ module Discord
     abstract class DiscordPlugin
         getter commands : Set(String)
         getter name : String = "DiscordPlugin"
-        getter passive : Bool = false
+        getter passive : Bool
 
-        def initialize(@commands, @name, @passive)
+        def initialize(@name, @commands = Set(String).new, @passive = false)
         end
 
         def execute(command, client, payload)

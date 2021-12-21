@@ -49,9 +49,10 @@ module Discord
         end
 
         plugins.each do |plugin|
-          plugin.commands.includes? command
-          command = command.lchop(PREFIX)
-          plugin.execute(command, client, payload)
+          if plugin.commands.includes? command
+            command = command.lchop(PREFIX)
+            plugin.execute(command, client, payload)
+          end
 
           if plugin.passive
             plugin.passive(client, payload)
