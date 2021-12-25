@@ -1,4 +1,5 @@
 # based on https://github.com/crystal-lang/crystal/blob/master/shell.nix
+#
 # This nix-shell script can be used to get a complete development environment
 # for the Crystal compiler.
 #
@@ -12,6 +13,11 @@
 # ...
 # $ nix-shell --pure --arg llvm 6
 #
+# Futhermore you can add choose to install further software to test the bot against
+# an actual syncplay server
+#
+# $ nix-shell --pure --arg testing true
+#
 # If needed, you can use https://app.cachix.org/cache/crystal-ci to avoid building
 # packages that are not available in Nix directly. This is mostly useful for musl.
 #
@@ -20,7 +26,7 @@
 # $ nix-shell --pure --arg musl true
 #
 
-{llvm ? 10, musl ? false, system ? builtins.currentSystem}:
+{llvm ? 10, musl ? false, system ? builtins.currentSystem, testing ? false}:
 
 let
   nixpkgs = import (builtins.fetchTarball {
@@ -38,13 +44,18 @@ let
       name = "crystal-binary";
       src = builtins.fetchTarball { inherit url sha256; };
 
-      # Extract only the compiler binary
       buildCommand = ''
-        mkdir -p $out/bin
+        mkdir -p $out
+
         # Darwin packages use embedded/bin/crystal
-        [ ! -f "${src}/embedded/bin/crystal" ] || cp ${src}/embedded/bin/crystal $out/bin/
+        if [ -f "${src}/embedded/bin/crystal" ]; then
+          cp -R ${src}/{src,bin,embedded/*} $out/
+        fi
         # Linux packages use lib/crystal/bin/crystal
-        [ ! -f "${src}/lib/crystal/bin/crystal" ] || cp ${src}/lib/crystal/bin/crystal $out/bin/
+        if [ -f "${src}/lib/crystal/bin/crystal" ]; then
+          cp -R ${src}/* $out
+          cp -R ${src}/share/crystal/src $out
+        fi
       '';
     };
 
@@ -109,7 +120,8 @@ let
       boehmgc gmp libevent libiconv libxml2 libyaml openssl pcre zlib
     ] ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
 
-  tools = [ pkgs.hostname pkgs.git llvm_suite.extra ];
+  tools = with pkgs; [ pkgs.hostname pkgs.git llvm_suite.extra openssl ] ++ lib.optionals testing [ syncplay ];
+  libraries = with pkgs; lib.strings.concatStringsSep ":" (lib.lists.forEach stdLibDeps (x: "${x}/lib/"));
 in
 
 pkgs.stdenv.mkDerivation rec {
@@ -123,6 +135,8 @@ pkgs.stdenv.mkDerivation rec {
   ];
 
   LLVM_CONFIG = "${llvm_suite.llvm}/bin/llvm-config";
+  CRYSTAL_LIBRARY_PATH = "${libraries}:${latestCrystalBinary}/lib";
+  CRYSTAL_PATH = "lib:${latestCrystalBinary}/src/";
 
   MACOSX_DEPLOYMENT_TARGET = "10.11";
 }
