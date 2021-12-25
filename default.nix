@@ -2,7 +2,7 @@
 }:
 
 pkgs.crystal.buildCrystalPackage rec {
-  pname = "dmnd_bot";
+  pname = "dmnd-bot";
   version = "0.2.0";
   src = builtins.path { path = ./.; name = pname; };
 
