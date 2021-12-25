@@ -127,7 +127,7 @@ module Saucenao
 
     # # Pawoo
     @[JSON::Field(key: "pawoo_id")]
-    getter pawoo_id : String?
+    getter pawoo_id : Int32?
     @[JSON::Field(key: "pawoo_user_username")]
     getter pawoo_user_username : String?
     @[JSON::Field(key: "pawoo_user_acct")]
@@ -223,23 +223,23 @@ module Discord
 
       output = "Sources:\n"
 
-      payload.embeds.each do |embed|
-        url = embed.url
-        unless url.nil?
-          body = construct_body(url, threshold: threshold)
-          unless body.strip.empty?
-            images += 1
+      # payload.embeds.each do |embed|
+      #   url = embed.url
+      #   unless url.nil?
+      #     body = construct_body(url, threshold: threshold)
+      #     unless body.strip.empty?
+      #       images += 1
 
-            unless @params.includes? "url"
-              @params.add("url", url)
-            end
-            @params["url"] = url
-            @endpoint.query_params = @params
+      #       unless @params.includes? "url"
+      #         @params.add("url", url)
+      #       end
+      #       @params["url"] = url
+      #       @endpoint.query_params = @params
 
-            output += body
-          end
-        end
-      end
+      #       output += body
+      #     end
+      #   end
+      # end
 
       payload.attachments.each do |attachment|
         url = attachment.url
