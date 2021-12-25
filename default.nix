@@ -1,4 +1,4 @@
-{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/0fe6b1ccde4f80ff7a3c969dffb57a811932dc38.tar.gz") { }
+{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/a7ecde854aee5c4c7cd6177f54a99d2c1ff28a31.tar.gz") { }
 }:
 
 pkgs.crystal.buildCrystalPackage rec {
@@ -6,7 +6,7 @@ pkgs.crystal.buildCrystalPackage rec {
   version = "0.2.0";
   src = builtins.path { path = ./.; name = pname; };
 
-  format = "shards";
+  hardsFile = ./shards.nix;
 
   postPatch = ''
     substituteInPlace spec/syncplay_bot_spec.cr \

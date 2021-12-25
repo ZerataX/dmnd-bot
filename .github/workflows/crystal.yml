@@ -20,7 +20,8 @@ jobs:
     - name: Create Test Certs
       run: |
         pushd spec/test_certs
-        ./create_certs.sh
+        sudo bash create_certs.sh
+        sudo chmod 755 *
         popd
 
     - name: Build Release
