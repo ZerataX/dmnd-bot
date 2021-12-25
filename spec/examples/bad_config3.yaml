@@ -1,3 +1,6 @@
+discord:
+  token: testtoken3
+  id: 3
 instances:
 - host: http://localhost:8995
   room: example

@@ -29,7 +29,7 @@ end
 
 begin
   Log.setup(debug)
-  Log.info { "Starting up..." }
+  Log.info { "Starting up... #{Dir.current}" }
 
   parser = Config::Parser.new(path)
   syncplay = parser.syncplay

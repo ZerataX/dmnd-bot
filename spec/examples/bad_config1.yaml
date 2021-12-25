@@ -1,6 +1,10 @@
-instances:
-- host: http://localhost:8995
-  room: example
-  webhooks:
-  - url: https://discord.com/api/webhooks/example
-    type: DISCORD
+discord:
+  token: testtoken1
+  id: 1
+syncplay:
+  instances:
+  - host: http://localhost:8995
+    room: example
+    webhooks:
+    - url: https://discord.com/api/webhooks/example
+      type: DISCORD

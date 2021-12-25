@@ -320,6 +320,7 @@ module Discord
         Log.warn { "Saucenao responded with #{response.status_code}" }
         Log.debug { response.body }
       end
+      return nil
     end
   end
 end

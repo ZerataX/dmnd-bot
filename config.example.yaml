@@ -1,6 +1,6 @@
 discord:
   token: longrandomstring # see https://discord.com/developers/
-  id: bignumber
+  id: 111111111111111111
 saucenao:
   enabled: false
   token: longrandomstring # see https://saucenao.com/user.php

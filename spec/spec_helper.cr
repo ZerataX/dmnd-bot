@@ -1,5 +1,5 @@
 require "spec"
-require "../src/syncplay_bot"
+require "../src/dmnd-bot_cli"
 
 DIR = Path.posix "./spec"
 

@@ -20,21 +20,20 @@ jobs:
     - name: Create Test Certs
       run: |
         pushd spec/test_certs
-        sudo bash create_certs.sh
-        sudo chmod 755 *
+        bash create_certs.sh
         popd
 
     - name: Build Release
       run: |
         nix-build
-        sudo chmod a+x result/bin/syncplay_bot
+        sudo chmod a+x result/bin/dmnd_bot
 
     - name: Upload release artifacts
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         draft: true
-        files: result/bin/syncplay_bot
+        files: result/bin/dmnd_bot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-CERT_DIR = DIR/"test_certs"
+EXAMPLES_DIR = DIR/"examples"
 
 describe Config do
   describe Config::Parser do
@@ -32,8 +32,13 @@ describe Config do
 
     it "parses the correct values" do
       parser = Config::Parser.new(Path.posix("./config.example.yaml").normalize)
-      instance = parser.syncplay.instances[0]
-      instance.host.port.should eq(8995)
+      
+      instances = parser.syncplay.instances
+      if instances.nil?
+        fail "instances should not be nil here"
+      else
+      instances[0].host.port.should eq(8995)
+      end
     end
   end
 end

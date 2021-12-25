@@ -5,8 +5,14 @@ pkgs.crystal.buildCrystalPackage rec {
   pname = "dmnd-bot";
   version = "0.2.0";
   src = builtins.path { path = ./.; name = pname; };
+  
+  format = "shards";
 
-  hardsFile = ./shards.nix;
+  shardsFile = ./shards.nix;
+  
+  buildInputs = [
+    pkgs.openssl
+  ];
 
   postPatch = ''
     substituteInPlace spec/syncplay_bot_spec.cr \

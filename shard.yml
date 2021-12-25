@@ -1,5 +1,5 @@
 name: dmnd-bot
-description: |
+description: dmnd's official discord bot
   
 version: 0.2.0
 
@@ -8,7 +8,7 @@ authors:
 
 targets:
   dmnd_bot:
-    main: src/dmnd_bot_cli.cr
+    main: src/dmnd-bot_cli.cr
 
 dependencies:
   discordcr:
