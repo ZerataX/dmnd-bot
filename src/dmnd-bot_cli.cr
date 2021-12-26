@@ -5,6 +5,8 @@ require "./config"
 require "./syncplay/syncplay_bot"
 require "./discord_bot"
 
+VERSION = {{ `shards version`.stringify }}
+
 debug = Log::Severity::Info
 path = Path.posix("./config.yaml")
 
@@ -12,7 +14,7 @@ OptionParser.parse do |parser|
   parser.banner = "dmnd bot"
 
   parser.on "-v", "--version", "Show version" do
-    puts "version 0.2.0"
+    puts "version #{VERSION}"
     exit
   end
   parser.on "-f PATH", "--file=PATH", "Config file" do |file_path|

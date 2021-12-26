@@ -3,7 +3,7 @@
 
 pkgs.crystal.buildCrystalPackage rec {
   pname = "dmnd-bot";
-  version = "0.2.0";
+  version = "0.2.2";
   src = builtins.path { path = ./.; name = pname; };
   
   format = "shards";
