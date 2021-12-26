@@ -219,96 +219,97 @@ module Discord
 
     def passive(client, payload)
       images = 0
-      threshold = 65.5
-
-      output = "Sources:\n"
-
-      # payload.embeds.each do |embed|
-      #   url = embed.url
-      #   unless url.nil?
-      #     body = construct_body(url, threshold: threshold)
-      #     unless body.strip.empty?
-      #       images += 1
-
-      #       unless @params.includes? "url"
-      #         @params.add("url", url)
-      #       end
-      #       @params["url"] = url
-      #       @endpoint.query_params = @params
-
-      #       output += body
-      #     end
-      #   end
-      # end
+      threshold = 55.0
 
       payload.attachments.each do |attachment|
         url = attachment.url
-        body = construct_body(url, threshold: threshold)
-        unless body.strip.empty?
-          images += 1
+        sauce = get_sauce url
 
-          unless @params.includes? "url"
-            @params.add("url", url)
-          end
-          @params["url"] = url
-          @endpoint.query_params = @params
-
-          output += body
+        if sauce.nil?
+          Log.info { "no sauce :("}
+          next
         end
-      end
-
-      if images > 0
-        client.create_message(payload.channel_id, output)
+        Log.info { "got sauce!" }
+        embed = construct_embed(sauce, url, threshold: threshold)
+        unless embed.nil?
+          client.create_message(payload.channel_id, embed: embed, content: "")
+        end
       end
     end
 
-    def construct_body(image_url : URI | String, limit : Int32 = 0, threshold : Float64 = 0)
-      output = ""
-      
-      unless @api_params.includes? "url"
-        @api_params.add("url", image_url)
+    def construct_embed(sauce : Saucenao::Parser, url : String, limit : Int32 = 1, threshold : Float64 = 0) : Embed?
+      unless @params.includes? "url"
+        @params.add("url", url)
       end
-      @api_params["url"] = image_url
-      @api_endpoint.query_params = @api_params
+      @params["url"] = url
+      @endpoint.query_params = @params
 
-      sauce = get_sauce @api_endpoint
+      embed = Embed.new(title: "Sauce found!", url: @endpoint.to_s)
+      fields = [] of EmbedField
+      
       if sauce
+        Log.info { "found #{sauce.results.size} sources!" }
         sauce.results.sort_by! { |result| result.header.similiarty }
         sauce.results.reverse!
         sauce.results[..limit].each do |result|
-          similarity = result.header.similiarty
           data = result.data
+          header = result.header
+          similarity = header.similiarty
+
           if similarity < threshold
             Log.info { "Threshold not met!" }
             next
           end
           case similarity
           when 0..60
-            output += "🔴"
+            similarity_emoji = "🔴"
           when 60..80
-            output += "🟠"
+            similarity_emoji = "🟠"
           when 80..90
-            output += "🟡"
+            similarity_emoji = "🟡"
           when 90..
-            output += "🟢"
+            similarity_emoji = "🟢"
           end
-          output += " Similiarity #{similarity}%\n"
-          case result.header.index_id
+
+          field_value = ""
+          case header.index_id
           when Saucenao::IndexSite::Anime
-            output += "\n🎞️ #{data.source} Episode #{data.part} - #{data.est_time}\n"
+            field_value += "🎞️ #{data.source} Episode #{data.part} - #{data.est_time}\n"
           end
-          urls = result.data.ext_urls
+
+          urls = data.ext_urls
           unless urls.nil?
-            urls.each { |url| output += "- <#{url}>\n" }
+            urls.each { |url| field_value += "- <#{url}>\n" }
+          end
+
+          field = EmbedField.new(
+            name: "#{similarity_emoji} Similiarity #{similarity}%",
+            value: field_value
+          )  
+          fields.push(field)
+          if embed.thumbnail.nil? && !header.thumbnail.nil?
+            embed.thumbnail = EmbedThumbnail.new header.thumbnail
           end
         end
       end
-      output
+      if fields.size > 0
+        embed.fields = fields
+        embed
+      else
+        nil
+      end
     end
 
-    def get_sauce(url : URI) : Saucenao::Parser | Nil
-      Log.info { "getting sauce for: #{url}" }
-      response = HTTP::Client.get url
+    def get_sauce(url : URI | String) : Saucenao::Parser | Nil
+      unless @api_params.includes? "url"
+        @api_params.add("url", url)
+      end
+      @api_params["url"] = url
+      @api_endpoint.query_params = @api_params
+
+      Log.info { "getting sauce for: #{@api_endpoint}" }
+
+      response = HTTP::Client.get @api_endpoint
       if response.status_code == 200
         begin
           Saucenao::Parser.from_json response.body
@@ -318,9 +319,8 @@ module Discord
         end
       else
         Log.warn { "Saucenao responded with #{response.status_code}" }
-        Log.debug { response.body }
+        nil
       end
-      return nil
     end
   end
 end
