@@ -19,6 +19,14 @@ pkgs.crystal.buildCrystalPackage rec {
         --replace 'syncplay' '${pkgs.syncplay}/bin/syncplay' 
   '';
 
+  preCheck = ''
+    echo "creating test certs..."
+    pushd spec/test_certs/
+    bash create_certs.sh
+    popd
+    echo "done!"
+  '';
+
   checkInputs = [
     pkgs.syncplay
   ];

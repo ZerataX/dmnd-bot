@@ -7,6 +7,10 @@ describe Syncplay, tags: "syncplay" do
   describe "#supports_tls", tags: "network" do
     it "returns true if server support TLS", tags: "server" do
       port = Random.rand(1025..9000)
+      cert_path = Path[CERT_DIR/"chain.pem"]
+      unless File.exists? cert_path
+        fail("certs were not created, run ./#{CERT_DIR.normalize}/create_certs.sh to create them")
+      end
       server = Process.new("syncplay-server --port #{port} --tls=#{CERT_DIR.normalize}", shell: true)
       sleep(1) # wait for server to turn on
 

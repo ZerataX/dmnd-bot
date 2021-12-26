@@ -120,7 +120,7 @@ let
       boehmgc gmp libevent libiconv libxml2 libyaml openssl pcre zlib
     ] ++ stdenv.lib.optionals stdenv.isDarwin [ libiconv ];
 
-  tools = with pkgs; [ pkgs.hostname pkgs.git llvm_suite.extra openssl ] ++ lib.optionals testing [ syncplay ];
+  tools = with pkgs; [ pkgs.hostname pkgs.git llvm_suite.extra ] ++ lib.optionals testing [ syncplay openssl ];
   libraries = with pkgs; lib.strings.concatStringsSep ":" (lib.lists.forEach stdLibDeps (x: "${x}/lib/"));
 in
 
