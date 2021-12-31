@@ -79,7 +79,7 @@ module Saucenao
   class ResultHeader
     include JSON::Serializable
     @[JSON::Field(key: "similarity", converter: StringToFloat)]
-    getter similiarty : Float32
+    getter similarity : Float32
     @[YAML::Field(key: "thumbnail")]
     getter thumbnail : String
     @[JSON::Field(key: "index_id", converter: Enum::ValueConverter(Saucenao::IndexSite))]
@@ -219,7 +219,6 @@ module Discord
 
     def passive(client, payload)
       images = 0
-      threshold = 55.0
 
       payload.attachments.each do |attachment|
         url = attachment.url
@@ -230,14 +229,14 @@ module Discord
           next
         end
         Log.info { "got sauce!" }
-        embed = construct_embed(sauce, url, threshold: threshold)
+        embed = construct_embed(sauce, url, threshold: 80.0)
         unless embed.nil?
           client.create_message(payload.channel_id, embed: embed, content: "")
         end
       end
     end
 
-    def construct_embed(sauce : Saucenao::Parser, url : String, limit : Int32 = 1, threshold : Float64 = 0) : Embed?
+    def construct_embed(sauce : Saucenao::Parser, url : String, limit : Int32 = 2, threshold : Float64 = 0) : Embed?
       unless @params.includes? "url"
         @params.add("url", url)
       end
@@ -249,17 +248,13 @@ module Discord
       
       if sauce
         Log.info { "found #{sauce.results.size} sources!" }
-        sauce.results.sort_by! { |result| result.header.similiarty }
+        sauce.results.sort_by! { |result| result.header.similarity }
         sauce.results.reverse!
-        sauce.results[..limit].each do |result|
+        sauce.results[..(limit - 1)].each do |result|
           data = result.data
           header = result.header
-          similarity = header.similiarty
+          similarity = header.similarity
 
-          if similarity < threshold
-            Log.info { "Threshold not met!" }
-            next
-          end
           case similarity
           when 0..60
             similarity_emoji = "🔴"
@@ -271,10 +266,12 @@ module Discord
             similarity_emoji = "🟢"
           end
 
+
           field_value = ""
           case header.index_id
           when Saucenao::IndexSite::Anime
             field_value += "🎞️ #{data.source} Episode #{data.part} - #{data.est_time}\n"
+            threshold *= 0.65 # anime screenshots are accurate even at very low similarity
           end
 
           urls = data.ext_urls
@@ -286,7 +283,15 @@ module Discord
             name: "#{similarity_emoji} Similiarity #{similarity}%",
             value: field_value
           )  
+
+          if similarity < threshold
+            Log.info { "Threshold not met!" }
+            next
+          end
+
           fields.push(field)
+
+
           if embed.thumbnail.nil? && !header.thumbnail.nil?
             embed.thumbnail = EmbedThumbnail.new header.thumbnail
           end
